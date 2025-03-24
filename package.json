@@ -4,13 +4,16 @@
   "description": "Implementation of the Wikipedia 'Getting to Philosophy' phenomenon",
   "main": "src/gettingtophilosophy.js",
   "scripts": {
-    "start": "node src/gettingtophilosophytester.js",
-    "build": "node src/gettingtophilosophytester.js"
+    "start": "node src/server.js",
+    "build": "node src/server.js",
+    "test": "node src/gettingtophilosophytester.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "axios": "^1.6.2",
-    "cheerio": "^1.0.0-rc.12"
+    "body-parser": "^1.20.3",
+    "cheerio": "^1.0.0-rc.12",
+    "express": "^4.21.2"
   }
 }

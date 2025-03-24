@@ -20,7 +20,6 @@ async function loadPathCache() {
     }
 }
 
-// Save updated cache
 async function savePathCache(cache) {
     await fs.writeFile(CACHE_FILE, JSON.stringify(cache, null, 2), 'utf8');
 }
@@ -226,22 +225,6 @@ async function getWikipediaArticleTitle(wikipediaUrl) {
     }
 }
 
-// Original code to run a single test
-if (require.main === module) {
-    const wikipediaUrl = 'https://en.wikipedia.org/wiki/Special:Random';
-    runLinkPath(wikipediaUrl, "https://en.wikipedia.org/wiki/Philosophy")
-        .then(visitedArticles => {
-            logDebug("\nFinal Path of Wikipedia articles:");
-            visitedArticles.forEach((article) => {
-                console.log(`${article}`);
-            });
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-}
-
-// Export functions for use in other modules
 module.exports = {
     logDebug,
     loadPathCache,

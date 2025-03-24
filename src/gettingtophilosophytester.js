@@ -26,14 +26,12 @@ async function testMultipleRandomPaths(count) {
                 fullPath: visitedArticles
             });
 
-            // Add a small delay to avoid overwhelming Wikipedia with requests
             await new Promise(resolve => setTimeout(resolve, 10));
         } catch (error) {
             console.error(`Error in test #${i}:`, error);
         }
     }
 
-    // Print summary statistics
     console.log("=== SUMMARY STATISTICS ===");
     console.log(`Total paths tested: ${results.length}`);
 
@@ -50,7 +48,6 @@ async function testMultipleRandomPaths(count) {
         console.log(`Shortest path: ${shortestPath} articles`);
         console.log(`Longest path: ${longestPath} articles`);
 
-        // Find articles that appeared most frequently in paths
         const articleCounts = {};
         results.forEach(result => {
             result.fullPath.forEach(article => {
@@ -58,10 +55,8 @@ async function testMultipleRandomPaths(count) {
             });
         });
 
-        // Remove Philosophy from the counts
         delete articleCounts['Philosophy'];
 
-        // Get the top 5 most common articles
         const sortedArticles = Object.entries(articleCounts)
             .sort((a, b) => b[1] - a[1])
             .slice(0, 5);
@@ -73,5 +68,4 @@ async function testMultipleRandomPaths(count) {
     }
 }
 
-// Run 25 tests
 testMultipleRandomPaths(25);

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wikipedia to Philosophy Path</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .path-container {
+      min-height: 150px;
+    }
+    .article-node {
+      padding: 10px 15px;
+      margin: 8px 0;
+      border-radius: 8px;
+      background-color: #f8f9fa;
+      border-left: 4px solid #0d6efd;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+    }
+    .article-node:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .article-number {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      border-radius: 50%;
+      background-color: #0d6efd;
+      color: white;
+      margin-right: 15px;
+      font-weight: bold;
+    }
+    .loading-spinner {
+      display: none;
+    }
+    .error-message {
+      color: #dc3545;
+      display: none;
+    }
+    .path-stats {
+      background-color: #e9ecef;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="text-center mb-5">
+        <h1 class="display-4">Getting to Philosophy</h1>
+      </div>
+
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <form id="wikiForm">
+            <div class="mb-3">
+              <label for="wikiUrl" class="form-label">Enter Wikipedia URL or article name</label>
+              <div class="input-group">
+                <span class="input-group-text">https://en.wikipedia.org/wiki/</span>
+                <input type="text" class="form-control" id="wikiUrl" placeholder="Article_Title or full URL">
+              </div>
+              <div class="form-text">Leave blank to start from a random article</div>
+            </div>
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary">Find Path to Philosophy</button>
+              <button type="button" id="randomButton" class="btn btn-outline-secondary">Try with Random Article</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="loading-spinner text-center my-4" id="loadingSpinner">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Finding the path to Philosophy...</p>
+      </div>
+
+      <div class="error-message my-4 p-3 rounded" id="errorMessage"></div>
+
+      <div id="resultsContainer" style="display: none;">
+        <div class="path-stats mb-4">
+          <div class="row">
+            <div class="col-md-4 text-center">
+              <h5>Starting Article</h5>
+              <p id="startArticle" class="fw-bold"></p>
+            </div>
+            <div class="col-md-4 text-center">
+              <h5>Steps to Philosophy</h5>
+              <p id="stepCount" class="fw-bold"></p>
+            </div>
+            <div class="col-md-4 text-center">
+              <h5>Path Status</h5>
+              <p id="pathStatus" class="fw-bold"></p>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="mb-3">Path to Philosophy</h3>
+        <div class="path-container" id="pathContainer"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const wikiForm = document.getElementById('wikiForm');
+    const randomButton = document.getElementById('randomButton');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const errorMessage = document.getElementById('errorMessage');
+    const resultsContainer = document.getElementById('resultsContainer');
+    const pathContainer = document.getElementById('pathContainer');
+    const startArticle = document.getElementById('startArticle');
+    const stepCount = document.getElementById('stepCount');
+    const pathStatus = document.getElementById('pathStatus');
+
+    wikiForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      findPathToPhilosophy();
+    });
+
+    randomButton.addEventListener('click', function() {
+      document.getElementById('wikiUrl').value = '';
+      findPathToPhilosophy(true);
+    });
+
+    async function findPathToPhilosophy(isRandom = false) {
+      loadingSpinner.style.display = 'block';
+      errorMessage.style.display = 'none';
+      errorMessage.textContent = '';
+      resultsContainer.style.display = 'none';
+      pathContainer.innerHTML = '';
+
+      try {
+        let startingUrl;
+        const userInput = document.getElementById('wikiUrl').value.trim();
+
+        if (isRandom || userInput === '') {
+          startingUrl = 'https://en.wikipedia.org/wiki/Special:Random';
+        } else if (userInput.startsWith('http')) {
+          startingUrl = userInput;
+        } else {
+          const formattedInput = userInput.replace(/ /g, '_');
+          startingUrl = `https://en.wikipedia.org/wiki/${formattedInput}`;
+        }
+
+        const response = await fetch('/find-path', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            startingUrl: startingUrl,
+            targetUrl: 'https://en.wikipedia.org/wiki/Philosophy'
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch path data');
+        }
+
+        const data = await response.json();
+        displayResults(data.path, startingUrl);
+
+      } catch (error) {
+        console.error('Error:', error);
+        errorMessage.textContent = `Error: ${error.message || 'Failed to find path to Philosophy'}`;
+        errorMessage.style.display = 'block';
+      } finally {
+        loadingSpinner.style.display = 'none';
+      }
+    }
+
+    function displayResults(articles, startingUrl) {
+      if (!articles || articles.length === 0) {
+        errorMessage.textContent = 'No path was found.';
+        errorMessage.style.display = 'block';
+        return;
+      }
+
+      startArticle.textContent = articles[0];
+      stepCount.textContent = articles.length - 1;
+
+      let status = 'Complete';
+      if (articles[articles.length - 1] !== 'Philosophy') {
+        status = 'Incomplete - Ended at ' + articles[articles.length - 1];
+      }
+      pathStatus.textContent = status;
+
+      articles.forEach((article, index) => {
+        const articleNode = document.createElement('div');
+        articleNode.className = 'article-node';
+
+        const articleNumber = document.createElement('span');
+        articleNumber.className = 'article-number';
+        articleNumber.textContent = index + 1;
+
+        const articleTitle = document.createElement('span');
+        articleTitle.className = 'article-title';
+
+        const articleLink = document.createElement('a');
+        articleLink.href = `https://en.wikipedia.org/wiki/${article.replace(/ /g, '_')}`;
+        articleLink.textContent = article;
+        articleLink.target = '_blank';
+        articleLink.rel = 'noopener noreferrer';
+
+        articleTitle.appendChild(articleLink);
+        articleNode.appendChild(articleNumber);
+        articleNode.appendChild(articleTitle);
+
+        if (index === articles.length - 1) {
+          articleNode.style.borderLeft = '4px solid #198754';
+          articleNode.style.backgroundColor = '#f0f8f1';
+        }
+
+        if (article === 'Philosophy') {
+          articleNode.style.borderLeft = '4px solid #198754';
+          articleNode.style.backgroundColor = '#f0f8f1';
+          articleNumber.style.backgroundColor = '#198754';
+        }
+
+        pathContainer.appendChild(articleNode);
+      });
+      resultsContainer.style.display = 'block';
+    }
+  });
+</script>
+</body>
+</html>
