@@ -3,7 +3,7 @@ const fs = require('fs').promises;
 const {
     runLinkPath,
     getWikipediaArticleTitle
-} = require('./wikipediautils');
+} = require('./gettingtophilosophy');
 
 async function testMultipleRandomPaths(count) {
     console.log(`Testing ${count} random Wikipedia articles for paths to Philosophy...\n`);

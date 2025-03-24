@@ -5,7 +5,7 @@ const path = require('path');
 
 const debug = false;
 
-const CACHE_FILE = path.join(__dirname, 'wiki_paths_cache.json');
+const CACHE_FILE = path.join(__dirname, '/assets/wiki_paths_cache.json');
 
 function logDebug(str){
     if (debug) {console.log(str);}

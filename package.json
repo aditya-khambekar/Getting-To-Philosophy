@@ -2,10 +2,10 @@
   "name": "getting-to-philosophy",
   "version": "1.0.0",
   "description": "Implementation of the Wikipedia 'Getting to Philosophy' phenomenon",
-  "main": "wikipediautils.js",
+  "main": "src/gettingtophilosophy.js",
   "scripts": {
-    "start": "node gettingtophilosophytester.js",
-    "build": "node gettingtophilosophytester.js"
+    "start": "node src/gettingtophilosophytester.js",
+    "build": "node src/gettingtophilosophytester.js"
   },
   "author": "",
   "license": "ISC",
