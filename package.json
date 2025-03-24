@@ -1,0 +1,16 @@
+{
+  "name": "getting-to-philosophy",
+  "version": "1.0.0",
+  "description": "Implementation of the Wikipedia 'Getting to Philosophy' phenomenon",
+  "main": "wikipediautils.js",
+  "scripts": {
+    "start": "node gettingtophilosophytester.js",
+    "build": "node gettingtophilosophytester.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.2",
+    "cheerio": "^1.0.0-rc.12"
+  }
+}
